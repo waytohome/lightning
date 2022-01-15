@@ -4,18 +4,12 @@
 
 ## 目录结构
 
-```shell
+```
 .
 ├── README.md
-├── ginx # gin增强工具库
-│   └── mws.go
-├── gormx # gorm增强工具库
-│   ├── logger.go
-│   └── logger_test.go
-└── logx # 基于zap+lumberjack 封装日志库
-    ├── field.go
-    ├── level.go
-    ├── logger.go
-    └── option.go
+├── ginx # gin 增强工具库
+├── gormx # gorm 增强工具库
+├── logx # 基于zap+lumberjack 封装日志库
+└── promx # 支持 prometheus 
 ```
 
