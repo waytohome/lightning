@@ -10,6 +10,8 @@ type config struct {
 	encoderConfig *zapcore.EncoderConfig
 	logger        *lumberjack.Logger
 	level         *zap.AtomicLevel
+
+	dumpLogFile bool // 是否需要输出日志文件
 }
 
 type Option func(conf *config)
@@ -20,6 +22,12 @@ func WithLogLevelOption(level string) Option {
 		if lv, ok := levelMap[level]; ok {
 			conf.level.SetLevel(lv)
 		}
+	}
+}
+
+func WithDumpLogFileOption(need bool) Option {
+	return func(conf *config) {
+		conf.dumpLogFile = need
 	}
 }
 

@@ -53,13 +53,19 @@ func NewLogger(opts ...Option) *Logger {
 		encoderConfig: &encoderConfig,
 		logger:        &lumberjackLogger,
 		level:         &level,
+		dumpLogFile:   false,
 	}
 	for _, opt := range opts {
 		opt(&conf)
 	}
 
 	encoder := zapcore.NewJSONEncoder(*conf.encoderConfig)
-	writeSyncer := zapcore.NewMultiWriteSyncer(zapcore.AddSync(conf.logger), zapcore.AddSync(os.Stdout))
+	var writers []zapcore.WriteSyncer
+	writers = append(writers, zapcore.AddSync(os.Stdout))
+	if conf.dumpLogFile {
+		writers = append(writers, zapcore.AddSync(conf.logger))
+	}
+	writeSyncer := zapcore.NewMultiWriteSyncer(writers...)
 	core := zapcore.NewCore(encoder, writeSyncer, conf.level)
 
 	var zopts []zap.Option
