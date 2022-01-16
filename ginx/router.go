@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/waytohome/lightning/confx"
 	"github.com/waytohome/lightning/logx"
@@ -37,6 +38,8 @@ func InitRouters(port string) {
 	r := gin.New()
 
 	r.Use(Logger(), Recovery())
+
+	pprof.Register(r)
 
 	for _, handler := range handlerMapping {
 		var router gin.IRoutes
