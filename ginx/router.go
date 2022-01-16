@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/waytohome/lightning/confx"
 	"github.com/waytohome/lightning/logx"
 )
 
@@ -21,6 +22,14 @@ var (
 )
 
 type Method = func(relativePath string, handlers ...gin.HandlerFunc) gin.IRoutes
+
+func InitRoutersWithConfigure(c confx.Configure) {
+	port, _ := c.GetString("server.port", ":8080")
+	if port == "" {
+		panic("config server.port is empty")
+	}
+	InitRouters(port)
+}
 
 func InitRouters(port string) {
 	gin.SetMode(modeMapping[logx.GetLevel()])
