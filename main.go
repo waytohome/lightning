@@ -5,6 +5,7 @@ import (
 	"github.com/waytohome/lightning/confx"
 	"github.com/waytohome/lightning/ginx"
 	"github.com/waytohome/lightning/gormx"
+	"github.com/waytohome/lightning/logx"
 	"github.com/waytohome/lightning/redix"
 	"gorm.io/gorm"
 )
@@ -23,6 +24,8 @@ func QuickStart() {
 }
 
 func Start(c confx.Configure) {
+	level, _ := c.GetString("logger.level", "warn")
+	logx.SetLevel(level)
 	db, err := gormx.NewClientWithConfigure(c)
 	if err != nil {
 		panic(err)

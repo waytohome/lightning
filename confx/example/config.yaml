@@ -1,0 +1,14 @@
+server:
+  port: :8080
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: root
+  db: test
+redis:
+  mode: single
+  addr: 127.0.0.1:6379
+  password:
+logger:
+  level: info
