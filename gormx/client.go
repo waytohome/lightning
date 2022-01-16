@@ -38,12 +38,20 @@ func NewClientWithConfigure(c confx.Configure) (*gorm.DB, error) {
 }
 
 func NewClient(dsn string) (*gorm.DB, error) {
+	logLv := logger.Silent
+	lv := logx.GetLevel()
+	for k, v := range levelMap {
+		if v == lv {
+			logLv = k
+		}
+	}
+	config := logger.Config{
+		SlowThreshold:             200 * time.Millisecond,
+		Colorful:                  false,
+		IgnoreRecordNotFoundError: false,
+		LogLevel:                  logLv,
+	}
 	return gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: WrapLogger(logx.Def, logger.Config{
-			SlowThreshold:             200 * time.Millisecond,
-			Colorful:                  false,
-			IgnoreRecordNotFoundError: false,
-			LogLevel:                  logger.Info,
-		}),
+		Logger: WrapLogger(logx.Def, config),
 	})
 }

@@ -14,18 +14,11 @@ import (
 
 var (
 	levelMap = map[logger.LogLevel]string{
-		logger.Info:   "info",
+		logger.Info:   "debug",
 		logger.Warn:   "warn",
 		logger.Error:  "error",
 		logger.Silent: "silent",
 	}
-
-	Def = WrapLogger(logx.Def, logger.Config{
-		SlowThreshold:             200 * time.Millisecond,
-		Colorful:                  false,
-		IgnoreRecordNotFoundError: false,
-		LogLevel:                  logger.Info,
-	})
 )
 
 type Logger struct {

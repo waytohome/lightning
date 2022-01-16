@@ -59,7 +59,7 @@ func TestInsertRecord(t *testing.T) {
 func init() {
 	dsn := "root:root@tcp(192.168.31.13:3306)/test?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: WrapLogger(logx.Def, logger.Config{
+		Logger: WrapLogger(logx.NewLogger(), logger.Config{
 			SlowThreshold:             10 * time.Millisecond,
 			Colorful:                  false,
 			IgnoreRecordNotFoundError: false,
