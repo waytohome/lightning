@@ -29,7 +29,7 @@ func (h *handler) Handle() gin.HandlerFunc {
 
 func TestHandlerWithoutGroup(t *testing.T) {
 	RegisterHandler(&handler{})
-	InitRouters(":8080")
+	InitRouters(":8080", Config{})
 }
 
 type group struct{}
@@ -64,7 +64,7 @@ func (h *handler2) Handle() gin.HandlerFunc {
 
 func TestHandlerWithGroup(t *testing.T) {
 	RegisterHandler(&handler2{})
-	InitRouters(":8080")
+	InitRouters(":8080", Config{})
 }
 
 func init() {

@@ -1,5 +1,9 @@
 server:
   port: :8080
+  timeout: 30
+  pprof: false
+  request-max-size: 10
+  allow-origins: 
 mysql:
   host: 127.0.0.1
   port: 3306

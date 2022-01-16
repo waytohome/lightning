@@ -29,17 +29,45 @@ func InitRoutersWithConfigure(c confx.Configure) {
 	if port == "" {
 		panic("config server.port is empty")
 	}
-	InitRouters(port)
+	timeout, _ := c.GetInt("server.timeout", 3)
+	needPprof, _ := c.GetBool("server.pprof", false)
+	reqMaxSize, _ := c.GetInt("server.request-max-size", 10)
+	allowOrigins, _ := c.GetString("server.allow-origins", "")
+	InitRouters(port, Config{
+		Timeout:      timeout,
+		NeedPprof:    needPprof,
+		ReqSizeLimit: reqMaxSize,
+		AllowOrigins: strings.Split(allowOrigins, ","),
+	})
 }
 
-func InitRouters(port string) {
+type Config struct {
+	Timeout      int      // 超时时间
+	ReqSizeLimit int      // 请求体最大值(M)
+	NeedPprof    bool     // 是否开启pprof
+	AllowOrigins []string // 跨域配置
+}
+
+func InitRouters(port string, conf Config) {
 	gin.SetMode(modeMapping[logx.GetLevel()])
 
 	r := gin.New()
 
-	r.Use(Logger(), Recovery())
+	// 内建中间件
+	var buildInMws []gin.HandlerFunc
+	buildInMws = append(buildInMws, Logger())
+	buildInMws = append(buildInMws, Recovery())
+	if len(conf.AllowOrigins) > 0 && conf.AllowOrigins[0] != "" {
+		buildInMws = append(buildInMws, CORS(conf.AllowOrigins))
+	}
+	buildInMws = append(buildInMws, Timeout(conf.Timeout))
+	buildInMws = append(buildInMws, Logger())
+	r.Use(buildInMws...)
 
-	pprof.Register(r)
+	if conf.NeedPprof {
+		logx.Info("gin enable pprof handlers")
+		pprof.Register(r)
+	}
 
 	for _, handler := range handlerMapping {
 		var router gin.IRoutes

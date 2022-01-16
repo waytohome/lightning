@@ -8,6 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-contrib/cors"
+	limits "github.com/gin-contrib/size"
+	"github.com/gin-contrib/timeout"
 	"github.com/gin-gonic/gin"
 	"github.com/waytohome/lightning/logx"
 )
@@ -68,4 +71,29 @@ func Recovery() gin.HandlerFunc {
 		}()
 		ctx.Next()
 	}
+}
+
+func CORS(origins []string) gin.HandlerFunc {
+	logx.Info("gin allow origins", logx.Strings("origins", origins))
+	config := cors.DefaultConfig()
+	config.AllowOrigins = origins
+	return cors.New(config)
+}
+
+func Timeout(max int) gin.HandlerFunc {
+	if max < 3 {
+		logx.Warn("gin middleware set timeout is too short, reset to default", logx.Int("expect", max), logx.Int("default", 3))
+		max = 3
+	}
+	handlerFunc := timeout.New(
+		timeout.WithTimeout(time.Duration(max)*time.Second),
+		timeout.WithResponse(func(c *gin.Context) {
+			c.JSON(http.StatusRequestTimeout, gin.H{"msg": "handle request timeout"})
+		},
+		))
+	return handlerFunc
+}
+
+func SizeLimit(max int) gin.HandlerFunc {
+	return limits.RequestSizeLimiter(int64(max * 1024 * 1024))
 }
