@@ -82,6 +82,6 @@ func (l *Logger) SetLevel(level string) {
 	}
 }
 
-func (l *Logger) GetLevel() Level {
-	return l.level.Level()
+func (l *Logger) GetLevel() string {
+	return l.level.Level().String()
 }

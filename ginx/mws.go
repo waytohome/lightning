@@ -21,7 +21,7 @@ func Logger() gin.HandlerFunc {
 		ctx.Next()
 
 		duration := time.Since(start)
-		logx.Debug("handle request",
+		logx.Info("handle request",
 			logx.String("method", ctx.Request.Method),
 			logx.String("path", path),
 			logx.Int("status", ctx.Writer.Status()),

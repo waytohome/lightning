@@ -5,68 +5,65 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-)
-
-const (
-	GetMethod     = "GET"
-	PostMethod    = "POST"
-	DeleteMethod  = "DELETE"
-	PatchMethod   = "PATCH"
-	PutMethod     = "PUT"
-	OptionsMethod = "OPTIONS"
-	HeadMethod    = "HEAD"
+	"github.com/waytohome/lightning/logx"
 )
 
 var (
 	handlerMapping = make(map[string]Handler)
-	methodMapping  = make(map[string]Method)
+	groupMapping   = make(map[string]gin.IRoutes)
+
+	modeMapping = map[string]string{
+		"debug": gin.DebugMode,
+		"info":  gin.ReleaseMode,
+		"warn":  gin.ReleaseMode,
+		"error": gin.ReleaseMode,
+	}
 )
 
 type Method = func(relativePath string, handlers ...gin.HandlerFunc) gin.IRoutes
 
-type Handler interface {
-	Method() string
-	Prefix() string
-	Path() string
-	Handle() gin.HandlerFunc
-}
+func InitRouters(port string) {
+	gin.SetMode(modeMapping[logx.GetLevel()])
 
-func InitRouter(port string) {
-	router := gin.Default()
+	r := gin.New()
 
-	initMethodMapping(router)
+	r.Use(Logger(), Recovery())
 
 	for _, handler := range handlerMapping {
-		fullPath := getFullPath(handler)
-		m := methodMapping[handler.Method()]
-		m(fullPath, handler.Handle())
+		var router gin.IRoutes
+		group := handler.Group()
+		if group != nil {
+			// check group
+			if _, ok := groupMapping[group.Name()]; !ok {
+				groupMapping[group.Name()] = r.Group(group.Name(), group.Middlewares()...)
+			}
+			router = groupMapping[group.Name()]
+		} else {
+			router = r
+		}
+		method := handler.Method(router)
+		method(handler.Path(), handler.Handle())
+		logx.Info("ginx handler is ready", logx.String("path", getHandlerPath(handler)))
 	}
 
-	if err := router.Run(port); err != nil {
+	if err := r.Run(port); err != nil {
 		panic(err)
 	}
 }
 
 func RegisterHandler(handler Handler) {
-	key := getFullPath(handler)
+	key := getHandlerPath(handler)
 	if _, ok := handlerMapping[key]; ok {
 		panic("duplicate handler found " + key)
 	}
 	handlerMapping[key] = handler
 }
 
-func getFullPath(handler Handler) string {
-	fullPath := fmt.Sprintf("/%s/%s", handler.Prefix(), handler.Path())
-	fullPath = strings.ReplaceAll(fullPath, "//", "/")
-	return fullPath
-}
-
-func initMethodMapping(r *gin.Engine) {
-	methodMapping[GetMethod] = r.GET
-	methodMapping[PostMethod] = r.POST
-	methodMapping[PutMethod] = r.PUT
-	methodMapping[DeleteMethod] = r.DELETE
-	methodMapping[PatchMethod] = r.PATCH
-	methodMapping[OptionsMethod] = r.OPTIONS
-	methodMapping[HeadMethod] = r.HEAD
+func getHandlerPath(handler Handler) string {
+	key := fmt.Sprintf("/%s", handler.Path())
+	if handler.Group() != nil {
+		key = fmt.Sprintf("/%s/%s", handler.Group().Name(), handler.Path())
+	}
+	key = strings.ReplaceAll(key, "//", "/")
+	return key
 }
