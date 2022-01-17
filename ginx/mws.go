@@ -82,13 +82,14 @@ func CORS(origins []string) gin.HandlerFunc {
 	return cors.New(config)
 }
 
-func Timeout(max int) gin.HandlerFunc {
+func Timeout(max int, h gin.HandlerFunc) gin.HandlerFunc {
 	if max < 3 {
 		logx.Warn("gin middleware set timeout is too short, reset to default", logx.Int("expect", max), logx.Int("default", 3))
 		max = 3
 	}
 	handlerFunc := timeout.New(
 		timeout.WithTimeout(time.Duration(max)*time.Second),
+		timeout.WithHandler(h),
 		timeout.WithResponse(func(c *gin.Context) {
 			c.JSON(http.StatusRequestTimeout, gin.H{"msg": "handle request timeout"})
 		},

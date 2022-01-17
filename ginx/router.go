@@ -60,7 +60,6 @@ func InitRouters(port string, conf Config) {
 	if len(conf.AllowOrigins) > 0 && conf.AllowOrigins[0] != "" {
 		buildInMws = append(buildInMws, CORS(conf.AllowOrigins))
 	}
-	buildInMws = append(buildInMws, Timeout(conf.Timeout))
 	buildInMws = append(buildInMws, SizeLimit(conf.ReqSizeLimit))
 	r.Use(buildInMws...)
 
@@ -82,7 +81,7 @@ func InitRouters(port string, conf Config) {
 			router = r
 		}
 		method := handler.Method(router)
-		method(handler.Path(), handler.Handle())
+		method(handler.Path(), Timeout(conf.Timeout, handler.Handle()))
 		logx.Info("ginx handler is ready", logx.String("path", getHandlerPath(handler)))
 	}
 
