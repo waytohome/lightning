@@ -61,7 +61,7 @@ func InitRouters(port string, conf Config) {
 		buildInMws = append(buildInMws, CORS(conf.AllowOrigins))
 	}
 	buildInMws = append(buildInMws, Timeout(conf.Timeout))
-	buildInMws = append(buildInMws, Logger())
+	buildInMws = append(buildInMws, SizeLimit(conf.ReqSizeLimit))
 	r.Use(buildInMws...)
 
 	if conf.NeedPprof {

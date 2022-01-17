@@ -12,6 +12,8 @@ import (
 	limits "github.com/gin-contrib/size"
 	"github.com/gin-contrib/timeout"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis_rate/v9"
 	"github.com/waytohome/lightning/logx"
 )
 
@@ -96,4 +98,19 @@ func Timeout(max int) gin.HandlerFunc {
 
 func SizeLimit(max int) gin.HandlerFunc {
 	return limits.RequestSizeLimiter(int64(max * 1024 * 1024))
+}
+
+func RateLimit(rdb redis.Cmdable, key string, limit redis_rate.Limit) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		limiter := redis_rate.NewLimiter(rdb)
+		resp, err := limiter.Allow(c, key, limit)
+		if err != nil {
+			panic(err)
+		}
+		if resp.Remaining <= 0 {
+			c.JSON(403, gin.H{"msg": "request limited"})
+			return
+		}
+		c.Next()
+	}
 }
