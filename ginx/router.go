@@ -90,6 +90,9 @@ func InitRouters(port string, conf Config) {
 		group := handler.Group()
 		if group != nil {
 			// check group
+			if strings.TrimSpace(group.Name()) == "" {
+				panic("group name is blank which is not allowed")
+			}
 			if _, ok := groupMapping[group.Name()]; !ok {
 				groupMapping[group.Name()] = r.Group(group.Name(), group.Middlewares()...)
 			}
@@ -120,7 +123,7 @@ func InitRouters(port string, conf Config) {
 }
 
 func RegisterHandler(handler Handler) {
-	key := getHandlerPath(handler)
+	key := getHandlerKey(handler)
 	if _, ok := handlerMapping[key]; ok {
 		panic("duplicate handler found " + key)
 	}
@@ -150,11 +153,16 @@ func getMethod(r gin.IRoutes, h Handler) Method {
 
 }
 
-func getHandlerPath(handler Handler) string {
-	key := fmt.Sprintf("/%s", handler.Path())
-	if handler.Group() != nil {
+func getHandlerKey(handler Handler) string {
+	key := ""
+	if handler.Group() != nil && handler.Path() != "" {
 		key = fmt.Sprintf("/%s/%s", handler.Group().Name(), handler.Path())
+	} else if handler.Path() != "" {
+		key = fmt.Sprintf("/%s", handler.Path())
+	} else {
+		key = fmt.Sprintf("/%s", handler.Group().Name())
 	}
 	key = strings.ReplaceAll(key, "//", "/")
+	key = fmt.Sprintf("%s-%s", handler.Method(), key)
 	return key
 }

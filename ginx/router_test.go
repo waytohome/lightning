@@ -49,7 +49,7 @@ func (h *handler2) Group() Group {
 }
 
 func (h *handler2) Method() string {
-	return MethodGet
+	return MethodPost
 }
 
 func (h *handler2) Path() string {
