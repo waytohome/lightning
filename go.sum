@@ -127,8 +127,8 @@ github.com/gin-contrib/size v0.0.0-20220102055520-f75bacbc2df3 h1:4qSA5YRz7fSzZA
 github.com/gin-contrib/size v0.0.0-20220102055520-f75bacbc2df3/go.mod h1:TNclj+D/YdCIzSgy+uog3TrPw30GpZjgcF/LXS3qpoA=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
 github.com/gin-contrib/sse v0.1.0/go.mod h1:RHrZQHXnP2xjPF+u1gW/2HnVO7nvIa9PG3Gm+fLHvGI=
-github.com/gin-contrib/timeout v0.0.2 h1:lA6Kuq6ODhrKtpjpqGWEb1gsdR77klmnzZjNLVaICVM=
-github.com/gin-contrib/timeout v0.0.2/go.mod h1:F3fjkmFc4I1QdF7MyVwtO6ZkPueBckNoiOVpU73HGgU=
+github.com/gin-contrib/timeout v0.0.3-0.20220106074210-2c5159603094 h1:UdbflxC2PNSdlV01faly8BLYEf2pRBBPHvSXRIBRd1E=
+github.com/gin-contrib/timeout v0.0.3-0.20220106074210-2c5159603094/go.mod h1:F3fjkmFc4I1QdF7MyVwtO6ZkPueBckNoiOVpU73HGgU=
 github.com/gin-gonic/gin v1.5.0/go.mod h1:Nd6IXA8m5kNZdNEHMBd93KT+mdY3+bewLgRvmCsR2Do=
 github.com/gin-gonic/gin v1.6.2/go.mod h1:75u5sXoLsGZoRN5Sgbi1eraJ4GU3++wFwWzhwvtwp4M=
 github.com/gin-gonic/gin v1.7.2/go.mod h1:jD2toBW3GZUr5UMcdrwQA10I7RuaFOl/SGeDjXkfUtY=
