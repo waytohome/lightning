@@ -70,6 +70,11 @@ func InitRouters(port string, conf Config) {
 
 	r := gin.New()
 
+	// 重写路由日志
+	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, _ string, _ int) {
+		logx.Debug("ginx register handler", logx.String("method", httpMethod), logx.String("url", absolutePath))
+	}
+
 	// 内建中间件
 	var buildInMws []gin.HandlerFunc
 	buildInMws = append(buildInMws, Logger())
@@ -81,7 +86,6 @@ func InitRouters(port string, conf Config) {
 	r.Use(buildInMws...)
 
 	if conf.NeedPprof {
-		logx.Info("gin enable pprof handlers")
 		pprof.Register(r)
 	}
 
