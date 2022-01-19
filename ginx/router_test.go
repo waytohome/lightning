@@ -13,8 +13,8 @@ func (h *handler) Group() Group {
 	return nil
 }
 
-func (h *handler) Method(r gin.IRoutes) Method {
-	return r.GET
+func (h *handler) Method() string {
+	return MethodGet
 }
 
 func (h *handler) Path() string {
@@ -48,8 +48,8 @@ func (h *handler2) Group() Group {
 	return &group{}
 }
 
-func (h *handler2) Method(r gin.IRoutes) Method {
-	return r.GET
+func (h *handler2) Method() string {
+	return MethodGet
 }
 
 func (h *handler2) Path() string {

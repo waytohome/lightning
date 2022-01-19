@@ -17,6 +17,16 @@ import (
 	"github.com/waytohome/lightning/logx"
 )
 
+const (
+	MethodGet     = "GET"
+	MethodPost    = "POST"
+	MethodPut     = "PUT"
+	MethodDelete  = "DELETE"
+	MethodOptions = "OPTIONS"
+	MethodPatch   = "PATCH"
+	MethodHead    = "HEAD"
+)
+
 var (
 	handlerMapping = make(map[string]Handler)
 	groupMapping   = make(map[string]gin.IRoutes)
@@ -87,7 +97,7 @@ func InitRouters(port string, conf Config) {
 		} else {
 			router = r
 		}
-		method := handler.Method(router)
+		method := getMethod(router, handler)
 		method(handler.Path(), Timeout(conf.Timeout, handler.Handle()))
 	}
 
@@ -115,6 +125,29 @@ func RegisterHandler(handler Handler) {
 		panic("duplicate handler found " + key)
 	}
 	handlerMapping[key] = handler
+}
+
+func getMethod(r gin.IRoutes, h Handler) Method {
+	m := h.Method()
+	switch strings.ToUpper(m) {
+	case MethodGet:
+		return r.GET
+	case MethodPost:
+		return r.POST
+	case MethodPut:
+		return r.PUT
+	case MethodDelete:
+		return r.DELETE
+	case MethodOptions:
+		return r.OPTIONS
+	case MethodPatch:
+		return r.PATCH
+	case MethodHead:
+		return r.HEAD
+	default:
+		panic("unrecognized method found, method = " + h.Method())
+	}
+
 }
 
 func getHandlerPath(handler Handler) string {

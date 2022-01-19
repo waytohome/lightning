@@ -4,7 +4,7 @@ import "github.com/gin-gonic/gin"
 
 type Handler interface {
 	Group() Group
-	Method(r gin.IRoutes) Method
+	Method() string
 	Path() string
 	Handle() gin.HandlerFunc
 }
