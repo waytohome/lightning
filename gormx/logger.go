@@ -55,13 +55,13 @@ func (l *Logger) Info(_ context.Context, msg string, data ...interface{}) {
 
 func (l *Logger) Warn(_ context.Context, msg string, data ...interface{}) {
 	if l.level >= logger.Warn {
-		l.logger.Info(fmt.Sprintf(msg, append([]interface{}{utils.FileWithLineNum()}, data...)...))
+		l.logger.Warn(fmt.Sprintf(msg, append([]interface{}{utils.FileWithLineNum()}, data...)...))
 	}
 }
 
 func (l *Logger) Error(_ context.Context, msg string, data ...interface{}) {
 	if l.level >= logger.Error {
-		l.logger.Info(fmt.Sprintf(msg, append([]interface{}{utils.FileWithLineNum()}, data...)...))
+		l.logger.Error(fmt.Sprintf(msg, append([]interface{}{utils.FileWithLineNum()}, data...)...))
 	}
 }
 
