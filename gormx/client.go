@@ -34,10 +34,28 @@ func NewClientWithConfigure(c confx.Configure) (*gorm.DB, error) {
 		panic("config mysql.db is empty")
 	}
 	dsn := fmt.Sprintf(dsnFormatter, user, pwd, host, port, db)
-	return NewClient(dsn)
+	maxConnect, _ := c.GetInt("mysql.connect.max", 100)
+	idleConnect, _ := c.GetInt("mysql.connect.idle", 10)
+	maxConnectLife, _ := c.GetInt("mysql.connect.max-life", 60)
+	idleConnectLife, _ := c.GetInt("mysql.connect-idle-life", 60)
+	return NewClient(Config{
+		Dsn:             dsn,
+		MacConnect:      maxConnect,
+		IdleConnect:     idleConnect,
+		ConnectMaxLife:  time.Duration(maxConnectLife) * time.Minute,
+		ConnectIdleLife: time.Duration(idleConnectLife) * time.Minute,
+	})
 }
 
-func NewClient(dsn string) (*gorm.DB, error) {
+type Config struct {
+	Dsn             string
+	MacConnect      int
+	IdleConnect     int
+	ConnectMaxLife  time.Duration
+	ConnectIdleLife time.Duration
+}
+
+func NewClient(conf Config) (*gorm.DB, error) {
 	logLv := logger.Silent
 	lv := logx.GetLevel()
 	for k, v := range levelMap {
@@ -48,10 +66,22 @@ func NewClient(dsn string) (*gorm.DB, error) {
 	config := logger.Config{
 		SlowThreshold:             200 * time.Millisecond,
 		Colorful:                  false,
-		IgnoreRecordNotFoundError: false,
+		IgnoreRecordNotFoundError: true,
 		LogLevel:                  logLv,
 	}
-	return gorm.Open(mysql.Open(dsn), &gorm.Config{
+	db, err := gorm.Open(mysql.Open(conf.Dsn), &gorm.Config{
 		Logger: WrapLogger(logx.Def, config),
 	})
+	if err != nil {
+		return nil, err
+	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+	sqlDB.SetMaxOpenConns(conf.MacConnect)
+	sqlDB.SetMaxIdleConns(conf.IdleConnect)
+	sqlDB.SetConnMaxLifetime(conf.ConnectMaxLife)
+	sqlDB.SetConnMaxIdleTime(conf.ConnectIdleLife)
+	return db, err
 }
