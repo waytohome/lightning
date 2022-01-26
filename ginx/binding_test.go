@@ -16,7 +16,7 @@ type testRequest struct {
 	Name    string  `query:"name" binding:"required,max=10"`
 	Amount  float64 `json:"amount" binding:"required,max=100"`
 	Age     int     `json:"age" binding:"required,min=1,max=130"`
-	Address string  `json:"address" binding:"required"`
+	Address string  `json:"address"`
 }
 
 func TestBindAndValidate(t *testing.T) {
@@ -51,4 +51,25 @@ func TestBindAndValidate(t *testing.T) {
 
 func init() {
 	gin.SetMode(gin.TestMode)
+}
+
+type testRequest2 struct {
+	Name string `query:"name" binding:"required,max=10"`
+}
+
+func TestOnlyQuery(t *testing.T) {
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	r := httptest.NewRequest(http.MethodGet, "/hello", nil)
+	query := r.URL.Query()
+	query.Add("name", "test")
+	r.URL.RawQuery = query.Encode()
+	c.Request = r
+
+	req := testRequest2{}
+	if err := BindAndValidate(c, &req); err != nil {
+		t.Fatal(err)
+	}
+	data, _ := json.Marshal(&req)
+	fmt.Println(string(data))
 }

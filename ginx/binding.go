@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"reflect"
 	"strconv"
 
@@ -49,7 +50,14 @@ func parse(c *gin.Context, ptr interface{}) error {
 		_ = c.Request.Body.Close()
 	}()
 	// parse json
-	if err := json.NewDecoder(c.Request.Body).Decode(ptr); err != nil {
+	all, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		return err
+	}
+	if len(all) <= 0 {
+		return nil
+	}
+	if err := json.Unmarshal(all, ptr); err != nil {
 		return err
 	}
 	return nil
