@@ -16,13 +16,13 @@ import (
 func BindAndValidate(c *gin.Context, ptr interface{}) error {
 	v := reflect.ValueOf(ptr)
 	if v.Kind() != reflect.Ptr {
-		return errors.New(fmt.Sprintf("require ptr kind object, %s kind not support", v.Kind().String()))
+		return New(CodeParamValidateFailed, fmt.Sprintf("require ptr kind object, %s kind not support", v.Kind().String()))
 	}
 	if err := parse(c, ptr); err != nil {
-		return err
+		return New(CodeParamValidateFailed, err.Error())
 	}
 	if err := binding.Validator.ValidateStruct(ptr); err != nil {
-		return err
+		return New(CodeParamValidateFailed, err.Error())
 	}
 	return nil
 }
