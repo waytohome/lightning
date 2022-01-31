@@ -21,7 +21,8 @@ func Abort(c *gin.Context, code int, msg string) {
 }
 
 func AbortWithErr(c *gin.Context, err error) {
-	if err := Adapt(err); err == nil {
+	err = Adapt(err)
+	if err := err; err == nil {
 		return
 	}
 	entry := err.(*errorEntry)
