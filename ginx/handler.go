@@ -8,7 +8,7 @@ import (
 
 type Handler interface {
 	Group() Group
-	Method() string
+	Method() Method
 	Path() string
 	Handle() gin.HandlerFunc
 	Middlewares() []gin.HandlerFunc
@@ -24,7 +24,7 @@ func (h *SwaggerHandler) Group() Group {
 	return nil
 }
 
-func (h *SwaggerHandler) Method() string {
+func (h *SwaggerHandler) Method() Method {
 	return MethodGet
 }
 

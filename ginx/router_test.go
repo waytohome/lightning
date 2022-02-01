@@ -18,7 +18,7 @@ func (h *handler) Group() Group {
 	return nil
 }
 
-func (h *handler) Method() string {
+func (h *handler) Method() Method {
 	return MethodGet
 }
 
@@ -57,7 +57,7 @@ func (h *handler2) Group() Group {
 	return &group{}
 }
 
-func (h *handler2) Method() string {
+func (h *handler2) Method() Method {
 	return MethodPost
 }
 
@@ -77,5 +77,5 @@ func TestHandlerWithGroup(t *testing.T) {
 }
 
 func init() {
-	logx.SetLevel("info")
+	logx.SetLevel("debug")
 }
