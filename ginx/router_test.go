@@ -4,10 +4,15 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/waytohome/lightning/logx"
 )
 
 type handler struct{}
+
+func (h *handler) Middlewares() []gin.HandlerFunc {
+	return nil
+}
 
 func (h *handler) Group() Group {
 	return nil
@@ -43,6 +48,10 @@ func (g *group) Middlewares() []gin.HandlerFunc {
 }
 
 type handler2 struct{}
+
+func (h *handler2) Middlewares() []gin.HandlerFunc {
+	return nil
+}
 
 func (h *handler2) Group() Group {
 	return &group{}

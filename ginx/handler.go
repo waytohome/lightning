@@ -11,9 +11,14 @@ type Handler interface {
 	Method() string
 	Path() string
 	Handle() gin.HandlerFunc
+	Middlewares() []gin.HandlerFunc
 }
 
 type SwaggerHandler struct{}
+
+func (h *SwaggerHandler) Middlewares() []gin.HandlerFunc {
+	return nil
+}
 
 func (h *SwaggerHandler) Group() Group {
 	return nil
