@@ -8,10 +8,10 @@ import (
 
 type Handler interface {
 	Group() Group
+	Middlewares() []gin.HandlerFunc
 	Method() Method
 	Path() string
 	Handle() gin.HandlerFunc
-	Middlewares() []gin.HandlerFunc
 }
 
 type SwaggerHandler struct{}
