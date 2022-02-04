@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-redis/redis_rate/v9"
+
 	"github.com/waytohome/lightning/logx"
 )
 
@@ -79,6 +80,16 @@ func CORS(origins []string) gin.HandlerFunc {
 	logx.Info("gin allow origins", logx.Strings("origins", origins))
 	config := cors.DefaultConfig()
 	config.AllowOrigins = origins
+	config.AllowMethods = []string{
+		MethodGet.String(),
+		MethodPost.String(),
+		MethodPut.String(),
+		MethodDelete.String(),
+		MethodOptions.String(),
+		MethodPatch.String(),
+		MethodHead.String(),
+	}
+	config.AllowHeaders = append(config.AllowHeaders, "Authorization")
 	return cors.New(config)
 }
 
