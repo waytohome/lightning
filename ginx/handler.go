@@ -6,21 +6,19 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+type Endpoints = []gin.HandlerFunc
+type Endpoint = gin.HandlerFunc
+
 type Handler interface {
-	Group() Group
-	Middlewares() []gin.HandlerFunc
+	Middlewares() Endpoints
 	Method() Method
 	Path() string
-	Handle() gin.HandlerFunc
+	Handle() Endpoint
 }
 
 type SwaggerHandler struct{}
 
-func (h *SwaggerHandler) Middlewares() []gin.HandlerFunc {
-	return nil
-}
-
-func (h *SwaggerHandler) Group() Group {
+func (h *SwaggerHandler) Middlewares() Endpoints {
 	return nil
 }
 
@@ -32,6 +30,6 @@ func (h *SwaggerHandler) Path() string {
 	return "/swagger/*any"
 }
 
-func (h *SwaggerHandler) Handle() gin.HandlerFunc {
+func (h *SwaggerHandler) Handle() Endpoint {
 	return ginSwagger.WrapHandler(swaggerFiles.Handler)
 }

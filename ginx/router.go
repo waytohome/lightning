@@ -79,26 +79,15 @@ func InitRouters(port string, conf Config) {
 		pprof.Register(r)
 	}
 
+	// 登记路由
 	for _, handler := range handlerMapping {
-		var router gin.IRoutes
-		group := handler.Group()
-		if group != nil {
-			// check group
-			if strings.TrimSpace(group.Name()) == "" {
-				panic("group name is blank which is not allowed")
-			}
-			if _, ok := groupMapping[group.Name()]; !ok {
-				groupMapping[group.Name()] = r.Group(group.Name(), group.Middlewares()...)
-			}
-			router = groupMapping[group.Name()]
-		} else {
-			router = r
+		execMethod := handler.Method().getExecMethod(r)
+		var handleFuncArr []gin.HandlerFunc
+		if len(handler.Middlewares()) > 0 {
+			handleFuncArr = append(handleFuncArr, handler.Middlewares()...)
 		}
-		execMethod := handler.Method().getExecMethod(router)
-		var handleFuncs []gin.HandlerFunc
-		handleFuncs = append(handleFuncs, handler.Middlewares()...)
-		handleFuncs = append(handleFuncs, handler.Handle())
-		execMethod(handler.Path(), handleFuncs...)
+		handleFuncArr = append(handleFuncArr, handler.Handle())
+		execMethod(handler.Path(), handleFuncArr...)
 	}
 
 	// 优雅关停
@@ -128,14 +117,10 @@ func RegisterHandler(handler Handler) {
 }
 
 func getHandlerKey(handler Handler) string {
-	key := ""
-	if handler.Group() != nil && handler.Path() != "" {
-		key = fmt.Sprintf("/%s/%s", handler.Group().Name(), handler.Path())
-	} else if handler.Path() != "" {
-		key = fmt.Sprintf("/%s", handler.Path())
-	} else {
-		key = fmt.Sprintf("/%s", handler.Group().Name())
+	if handler.Path() == "" {
+		panic("handler path is required!")
 	}
+	key := fmt.Sprintf("/%s", handler.Path())
 	key = strings.ReplaceAll(key, "//", "/")
 	key = fmt.Sprintf("%s-%s", handler.Method(), key)
 	return key
