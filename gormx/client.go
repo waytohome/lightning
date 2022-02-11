@@ -8,7 +8,6 @@ import (
 	"github.com/waytohome/lightning/logx"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 const (
@@ -56,18 +55,9 @@ type Config struct {
 }
 
 func NewClient(conf Config) (*gorm.DB, error) {
-	logLv := logger.Silent
-	lv := logx.GetLevel()
-	for k, v := range levelMap {
-		if v == lv {
-			logLv = k
-		}
-	}
-	config := logger.Config{
+	config := LoggerConfig{
 		SlowThreshold:             200 * time.Millisecond,
-		Colorful:                  false,
 		IgnoreRecordNotFoundError: true,
-		LogLevel:                  logLv,
 	}
 	db, err := gorm.Open(mysql.Open(conf.Dsn), &gorm.Config{
 		Logger: WrapLogger(logx.Def, config),

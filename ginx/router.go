@@ -20,7 +20,6 @@ import (
 
 var (
 	handlerMapping = make(map[string]Handler)
-	groupMapping   = make(map[string]gin.IRoutes)
 
 	modeMapping = map[string]string{
 		"debug": gin.DebugMode,

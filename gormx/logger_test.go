@@ -8,7 +8,6 @@ import (
 	"github.com/waytohome/lightning/logx"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 var (
@@ -59,11 +58,9 @@ func TestInsertRecord(t *testing.T) {
 func init() {
 	dsn := "root:root@tcp(192.168.31.13:3306)/test?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: WrapLogger(logx.NewLogger(), logger.Config{
+		Logger: WrapLogger(logx.NewLogger(logx.WithLogLevelOption("info")), LoggerConfig{
 			SlowThreshold:             10 * time.Millisecond,
-			Colorful:                  false,
-			IgnoreRecordNotFoundError: false,
-			LogLevel:                  logger.Info,
+			IgnoreRecordNotFoundError: true,
 		}),
 	})
 	if err != nil {
