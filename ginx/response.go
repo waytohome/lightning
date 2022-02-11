@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/waytohome/lightning/logx"
 )
 
 type resp struct {
@@ -13,7 +14,9 @@ type resp struct {
 }
 
 func Abort(c *gin.Context, code int, msg string) {
-	c.AbortWithStatusJSON(GetHttpCode(code), &resp{
+	httpCode := GetHttpCode(code)
+	logx.Error(msg, logx.Int("status", httpCode), logx.String("path", c.Request.RequestURI))
+	c.AbortWithStatusJSON(httpCode, &resp{
 		Code: code,
 		Msg:  msg,
 		Data: nil,
@@ -27,7 +30,9 @@ func AbortWithErr(c *gin.Context, err error) {
 	}
 	entry := err.(*errorEntry)
 	code := entry.GetCode()
-	c.AbortWithStatusJSON(GetHttpCode(code), &resp{
+	httpCode := GetHttpCode(code)
+	logx.Error(err.Error(), logx.Int("status", httpCode), logx.String("path", c.Request.RequestURI))
+	c.AbortWithStatusJSON(httpCode, &resp{
 		Code: code,
 		Msg:  err.Error(),
 		Data: nil,
